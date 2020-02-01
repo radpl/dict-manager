@@ -14,6 +14,7 @@ class EntryForm extends Component {
       handleSave,
       handleChange,
       handleCheck,
+      handleValidate,
       errors = {}
     } = this.props;
     return (
@@ -35,6 +36,7 @@ class EntryForm extends Component {
             error={errors.range}
           />
           <button>Add</button>
+          <button onClick={handleValidate}>Validate</button>
           <Checkbox
             name="validate"
             label="Validate entry"

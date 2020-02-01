@@ -10,31 +10,65 @@
       "dictId": 1,
       "id": 1,
       "domain": "Blue",
-      "range": "Red"
+      "range": "Red",
+      "drKey": "BlueRed",
+      "rdKey": "RedBlue"
     },
     {
       "dictId": 1,
       "id": 2,
       "domain": "Green",
-      "range": "White"
+      "range": "White",
+      "drKey": "GreenWhite",
+      "rdKey": "WhiteGreen"
     },
     {
       "dictId": 1,
       "id": 3,
       "domain": "Grey",
-      "range": "Pink"
+      "range": "Pink",
+      "drKey": "GreyPink",
+      "rdKey": "PinkGrey"
     },
     {
-      "domain": "A",
-      "range": "B",
+      "domain": "Stonegrey",
+      "range": "Dark Grey",
       "dictId": "1",
+      "drKey": "StonegreyDark Grey",
+      "rdKey": "Dark GreyStonegrey",
       "id": 4
     },
     {
-      "domain": "A",
-      "range": "B",
+      "domain": "Stonegrey",
+      "range": "Dark Grey",
       "dictId": "1",
+      "drKey": "StonegreyDark Grey",
+      "rdKey": "Dark GreyStonegrey",
       "id": 5
+    },
+    {
+      "domain": "Stonegrey",
+      "range": "Anthracite",
+      "dictId": "1",
+      "drKey": "StonegreyAnthracite",
+      "rdKey": "AnthraciteStonegrey",
+      "id": 6
+    },
+    {
+      "domain": "Dark Grey",
+      "range": "Stonegrey",
+      "dictId": "1",
+      "drKey": "Dark GreyStonegrey",
+      "rdKey": "StonegreyDark Grey",
+      "id": 7
+    },
+    {
+      "domain": "Dark Grey",
+      "range": "Anthracite",
+      "dictId": "1",
+      "drKey": "Dark GreyAnthracite",
+      "rdKey": "AnthraciteDark Grey",
+      "id": 8
     }
   ]
 }

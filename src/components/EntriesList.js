@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import "./EntriesList.css";
 
 class EntriesList extends Component {
   // eslint-disable-next-line no-useless-constructor
@@ -19,6 +20,7 @@ class EntriesList extends Component {
               <th>Id</th>
               <th>Domain</th>
               <th>Range</th>
+              <th>Status</th>
               <th />
             </tr>
           </thead>
@@ -29,6 +31,7 @@ class EntriesList extends Component {
                   <td>{entry.id}</td>
                   <td>{entry.domain}</td>
                   <td>{entry.range}</td>
+                  <td>{entry.status && entry.status}</td>
                   <td>
                     <button onClick={() => this.props.handleDelete(entry.id)}>
                       Delete

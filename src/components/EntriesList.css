@@ -1,0 +1,29 @@
+table {
+  border: 1px solid #1c6ea4;
+  background-color: #eeeeee;
+  width: 60%;
+  text-align: left;
+  border-collapse: collapse;
+}
+table td,
+table th {
+  border: 1px solid #aaaaaa;
+  padding: 3px 2px;
+}
+table tbody td {
+  font-size: 13px;
+}
+
+table thead {
+  background: #1c6ea4;
+  border-bottom: 1px solid #333333;
+}
+table thead th {
+  font-size: 15px;
+  font-weight: bold;
+  color: #ffffff;
+  border-left: 1px solid #d0e4f5;
+}
+table thead th:first-child {
+  border-left: none;
+}
