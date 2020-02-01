@@ -1,0 +1,40 @@
+{
+  "dictionaries": [
+    {
+      "id": 1,
+      "title": "Colors"
+    }
+  ],
+  "entries": [
+    {
+      "dictId": 1,
+      "id": 1,
+      "domain": "Blue",
+      "range": "Red"
+    },
+    {
+      "dictId": 1,
+      "id": 2,
+      "domain": "Green",
+      "range": "White"
+    },
+    {
+      "dictId": 1,
+      "id": 3,
+      "domain": "Grey",
+      "range": "Pink"
+    },
+    {
+      "domain": "A",
+      "range": "B",
+      "dictId": "2",
+      "id": 5
+    },
+    {
+      "domain": "A1",
+      "range": "B",
+      "dictId": "2",
+      "id": 6
+    }
+  ]
+}

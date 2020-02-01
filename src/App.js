@@ -1,26 +1,20 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import { Route } from "react-router-dom";
+import "./App.css";
+import DictPage from "./components/DictPage";
+import EntriesPage from "./components/EntriesPage";
+import Header from "./components/Header";
+import HomePage from "./components/HomePage";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+export default class App extends Component {
+  render() {
+    return (
+      <div className="main">
+        <Header />
+        <Route exact path="/" component={HomePage} />
+        <Route path="/dictionaries" component={DictPage} />
+        <Route path="/entries/:id" component={EntriesPage} />
+      </div>
+    );
+  }
 }
-
-export default App;
