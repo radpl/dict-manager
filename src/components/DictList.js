@@ -47,7 +47,7 @@ class DictList extends Component {
 }
 
 DictList.propTypes = {
-  dictionaries: PropTypes.string,
+  dictionaries: PropTypes.array,
   handleDelete: PropTypes.func.isRequired
 };
 

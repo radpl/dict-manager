@@ -10,11 +10,13 @@ class EntriesPage extends React.Component {
     this.state = {
       entries: null,
       entry: {},
-      dictId: null
+      dictId: null,
+      checked: true
     };
 
     this.handleDelete = this.handleDelete.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.handleCheck = this.handleCheck.bind(this);
     this.handleSave = this.handleSave.bind(this);
   }
 
@@ -28,14 +30,17 @@ class EntriesPage extends React.Component {
     });
   };
 
+  handleCheck = event => {
+    const checked = event.target.checked;
+    this.setState({ checked });
+  };
+
   handleSave = async event => {
     event.preventDefault();
+    if (!this.isEntryValid()) return;
+
     const { entry, entries } = this.state;
 
-    const found = entries.find(item => item.domain === entry.domain);
-    if (found) {
-      return;
-    }
     try {
       if (!this.state.dictId) return;
 
@@ -47,13 +52,59 @@ class EntriesPage extends React.Component {
     }
   };
 
-  isEntryValid = (newEntry, existingEntries) => {
-    //isDuplicate
-    //isDuplicateDomain
-    //isCycle
-    //isChain
+  isEntryValid = () => {
+    const { entry, entries } = this.state;
+    const errors = {};
+    let valid = true;
 
-    return true;
+    if (!this.state.checked) return true;
+
+    //isValue
+    if (!entry.domain) {
+      errors.domain = "Domain is required.";
+      this.setState({ errors });
+      return false;
+    }
+    if (!entry.range) {
+      errors.range = "Range is required.";
+      this.setState({ errors });
+      return false;
+    }
+
+    //isDuplicate
+    let found = entries.find(
+      item => item.domain === entry.domain && item.range === entry.range
+    );
+    if (found) {
+      errors.entry = "Error. Duplicate entry found.";
+      this.setState({ errors });
+      return false;
+    }
+    //isDuplicateDomain
+    found = entries.find(item => item.domain === entry.domain);
+    if (found) {
+      errors.entry = "Error. Duplicate domain found.";
+      this.setState({ errors });
+      return false;
+    }
+    //isCycle
+    found = entries.find(
+      item => item.domain === entry.range && item.range === entry.domain
+    );
+    if (found || entry.domain === entry.range) {
+      errors.entry = "Error. This entry creates cycle.";
+      this.setState({ errors });
+      return false;
+    }
+    //isChain
+    found = entries.find(item => item.range === entry.domain);
+    if (found) {
+      errors.entry = "Error. This entry creates chain.";
+      this.setState({ errors });
+      return false;
+    }
+
+    return valid;
   };
 
   handleDelete = async entryId => {
@@ -86,8 +137,11 @@ class EntriesPage extends React.Component {
         <EntryForm
           handleChange={this.handleChange}
           handleSave={this.handleSave}
+          handleCheck={this.handleCheck}
           domain={this.state.entry.domain}
           range={this.state.entry.range}
+          errors={this.state.errors}
+          checked={this.state.checked}
         />
         <EntriesList
           entries={this.state.entries}

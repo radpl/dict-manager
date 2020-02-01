@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
 
 class EntriesList extends Component {
   // eslint-disable-next-line no-useless-constructor
   constructor(props) {
     super(props);
-
   }
 
   render() {
@@ -13,7 +13,7 @@ class EntriesList extends Component {
       <div>
         <h2>Dictionary Entries</h2>
         {this.props.entries === null && <p>Loading dictionary entries...</p>}
-        < table>
+        <table>
           <thead>
             <tr>
               <th>Id</th>
@@ -23,23 +23,29 @@ class EntriesList extends Component {
             </tr>
           </thead>
           <tbody>
-            {
-              this.props.entries && this.props.entries.map(entry => (
+            {this.props.entries &&
+              this.props.entries.map(entry => (
                 <tr key={entry.id}>
                   <td>{entry.id}</td>
                   <td>{entry.domain}</td>
                   <td>{entry.range}</td>
-                  <td><button onClick={() => this.props.handleDelete(entry.id)}>Delete</button></td>
+                  <td>
+                    <button onClick={() => this.props.handleDelete(entry.id)}>
+                      Delete
+                    </button>
+                  </td>
                 </tr>
-              ))
-            }
+              ))}
           </tbody>
-        </ table>
-
+        </table>
       </div>
-
-    )
+    );
   }
 }
+
+EntriesList.propTypes = {
+  entries: PropTypes.array,
+  handleDelete: PropTypes.func.isRequired
+};
 
 export default EntriesList;

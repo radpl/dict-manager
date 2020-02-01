@@ -27,14 +27,14 @@
     {
       "domain": "A",
       "range": "B",
-      "dictId": "2",
-      "id": 5
+      "dictId": "1",
+      "id": 4
     },
     {
-      "domain": "A1",
+      "domain": "A",
       "range": "B",
-      "dictId": "2",
-      "id": 6
+      "dictId": "1",
+      "id": 5
     }
   ]
 }
