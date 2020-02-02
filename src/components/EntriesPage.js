@@ -1,12 +1,9 @@
 import React from "react";
 import FileSaver from "file-saver";
 import EntriesList from "./EntriesList";
-import {
-  saveEntry,
-  saveBulkEntries,
-  getEntries,
-  deleteEntry
-} from "../api/entryApi";
+import { saveEntry, saveBulkEntries, getEntries, deleteEntry } from "../api/entryApi";
+import { validateEntryStatus } from "../utilities/validation";
+import { convertEntriesToCSV, convertCSVToEntries } from "../utilities/fileProcessing";
 import EntryForm from "./EntryForm";
 import UploadFile from "../common/UploadFile";
 
@@ -18,7 +15,7 @@ class EntriesPage extends React.Component {
       entries: [],
       entry: {},
       dictId: null,
-      checked: true,
+      checked: false,
       nextId: 0,
       mode: "add"
     };
@@ -64,13 +61,7 @@ class EntriesPage extends React.Component {
           return {
             entries: entriesNew,
             mode: "add",
-            entry: {
-              ...prevState.entry,
-              domain: "",
-              range: "",
-              drKey: "",
-              rdKey: ""
-            }
+            entry: { ...prevState.entry, domain: "", range: "", drKey: "", rdKey: "" }
           };
         });
       } catch (error) {
@@ -108,6 +99,7 @@ class EntriesPage extends React.Component {
       this.setState({ errors });
       return false;
     }
+
     if (!entry.range) {
       errors.range = "Range is required.";
       this.setState({ errors });
@@ -156,9 +148,7 @@ class EntriesPage extends React.Component {
   handleDelete = async entryId => {
     try {
       await deleteEntry(entryId);
-      const filteredEntries = this.state.entries.filter(
-        item => item.id !== entryId
-      );
+      const filteredEntries = this.state.entries.filter(item => item.id !== entryId);
       this.setState({ entries: filteredEntries });
     } catch (error) {
       console.log("Delete failed " + error.message);
@@ -168,128 +158,8 @@ class EntriesPage extends React.Component {
   handleValidate = event => {
     event.preventDefault();
     const { entries } = this.state;
-    this.validateEntryStatus(entries);
-  };
-
-  validateEntryStatus = entries => {
-    const domainRangeKeys = {};
-    const rangeDomainKeys = {};
-    const domainKeys = {};
-    const rangeKeys = {};
-
-    const duplicates = {};
-    const cycles = {};
-    const domains = {};
-    const ranges = {};
-
-    for (let i = 0; i < entries.length; i++) {
-      //identify duplicates
-      if (domainRangeKeys[entries[i].drKey]) {
-        domainRangeKeys[entries[i].drKey].push(i);
-        for (let j = 0; j < domainRangeKeys[entries[i].drKey].length; j++) {
-          duplicates[domainRangeKeys[entries[i].drKey][j]] = true;
-        }
-      } else {
-        domainRangeKeys[entries[i].drKey] = [i];
-      }
-      //populate for cycles identification
-      if (rangeDomainKeys[entries[i].rdKey]) {
-        rangeDomainKeys[entries[i].rdKey].push(i);
-      } else {
-        rangeDomainKeys[entries[i].rdKey] = [i];
-      }
-
-      //identify duplicate domains
-      if (domainKeys[entries[i].domain]) {
-        domainKeys[entries[i].domain].push(i);
-        for (let j = 0; j < domainKeys[entries[i].domain].length; j++) {
-          domains[domainKeys[entries[i].domain][j]] = true;
-        }
-      } else {
-        domainKeys[entries[i].domain] = [i];
-      }
-
-      //populate for chains identification
-      if (rangeKeys[entries[i].range]) {
-        rangeKeys[entries[i].range].push(i);
-      } else {
-        rangeKeys[entries[i].range] = [i];
-      }
-
-      //pupulate status
-      entries[i].status = "Valid";
-    }
-
-    const drKeys = Object.keys(domainRangeKeys);
-    //identify cycles
-    for (let i = 0; i < drKeys.length; i++) {
-      let rdKey = rangeDomainKeys[drKeys[i]];
-      if (rdKey) {
-        for (let j = 0; j < rdKey.length; j++) {
-          cycles[rdKey[j]] = true;
-        }
-      }
-    }
-
-    const rKeys = Object.keys(rangeKeys);
-    //identify chains
-    for (let i = 0; i < rKeys.length; i++) {
-      let dKey = domainKeys[rKeys[i]];
-      if (dKey) {
-        for (let j = 0; j < dKey.length; j++) {
-          ranges[dKey[j]] = true;
-        }
-      }
-    }
-
-    //update status
-    const domainsKeys = Object.keys(domains);
-    const duplicateKeys = Object.keys(duplicates);
-    const rangesKeys = Object.keys(ranges);
-    const cycleKeys = Object.keys(cycles);
-
-    for (let i = 0; i < domainsKeys.length; i++) {
-      if (entries[domainsKeys[i]].status === "Valid") {
-        entries[domainsKeys[i]].status = "Forks";
-      } else {
-        entries[domainsKeys[i]].status += " Forks";
-      }
-    }
-
-    for (let i = 0; i < duplicateKeys.length; i++) {
-      if (entries[duplicateKeys[i]].status === "Valid") {
-        entries[duplicateKeys[i]].status = "Duplicate";
-      } else if (entries[duplicateKeys[i]].status.includes("Forks")) {
-        entries[duplicateKeys[i]].status = entries[
-          duplicateKeys[i]
-        ].status.replace("Forks", "Duplicate");
-      } else {
-        entries[duplicateKeys[i]].status += " Duplicate";
-      }
-    }
-
-    for (let i = 0; i < rangesKeys.length; i++) {
-      if (entries[rangesKeys[i]].status === "Valid") {
-        entries[rangesKeys[i]].status = "Chain";
-      } else {
-        entries[rangesKeys[i]].status += " Chain";
-      }
-    }
-
-    for (let i = 0; i < cycleKeys.length; i++) {
-      if (entries[cycleKeys[i]].status === "Valid") {
-        entries[cycleKeys[i]].status = "Cycle";
-      } else if (entries[cycleKeys[i]].status.includes("Chain")) {
-        entries[cycleKeys[i]].status = entries[cycleKeys[i]].status.replace(
-          "Chain",
-          "Cycle"
-        );
-      } else {
-        entries[cycleKeys[i]].status += " Cycle";
-      }
-    }
-
-    this.setState({ entries: [...entries] });
+    const validatedEntries = validateEntryStatus(entries);
+    this.setState({ entries: [...validatedEntries] });
   };
 
   async componentDidMount() {
@@ -304,6 +174,7 @@ class EntriesPage extends React.Component {
       console.log("Error", err);
     }
   }
+
   handleUploadClick = () => {
     this.fileUploader.current.click();
   };
@@ -315,62 +186,34 @@ class EntriesPage extends React.Component {
         const reader = new FileReader();
         reader.readAsText(csvFile);
         reader.onload = this.fileLoaded;
-        reader.onerror = this.errorHandler;
+        reader.onerror = (event) => console.log(event.target.error);
       }
     }
   };
-
-  async processData(csv) {
-    const linesRaw = csv.split(/\r\n|\n/);
-    const newEntries = linesRaw.map((data, index) => {
-      const [domain, range] = data.split(";");
-      return {
-        id: this.state.nextId + index,
-        dictId: this.state.dictId,
-        domain,
-        range,
-        drKey: domain + range,
-        rdKey: range + domain
-      };
-    });
-    if (newEntries) {
-      try {
-        const result = await saveBulkEntries(newEntries);
-        const nextId = +result[result.length - 1].id + 1;
-        this.setState({ nextId });
-        this.setState({ entries: result });
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  }
 
   fileLoaded = event => {
     const csv = event.target.result;
     this.processData(csv);
   };
 
-  errorHandler = event => {
-    console.log(event.target.error);
-  };
+  async processData(csv) {
+    const newEntries = convertCSVToEntries(csv, this.state.nextId, this.state.dictId)
+    if (newEntries) {
+      try {
+        const result = await saveBulkEntries(newEntries);
+        const nextId = +result[result.length - 1].id + 1;
+        this.setState({ nextId, entries: result });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }
 
   handleFileExport = event => {
     event.preventDefault();
-    const csv = this.convertEntriesToCSV();
-    const csvData = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-
-    FileSaver.saveAs(csvData, "data.csv");
-  };
-
-  convertEntriesToCSV = () => {
     const { entries } = this.state;
-
-    let lines = entries.map(entry => {
-      return Object.values(entry).join(",");
-    });
-    let linesCSV = lines.join("\n");
-
-    return linesCSV;
+    const csv = convertEntriesToCSV(entries);
+    FileSaver.saveAs(csv, "data.csv");
   };
 
   handleEditEntry = entry => {
