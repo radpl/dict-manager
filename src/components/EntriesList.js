@@ -1,46 +1,111 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import "./EntriesList.css";
 
 class EntriesList extends Component {
-  // eslint-disable-next-line no-useless-constructor
   constructor(props) {
     super(props);
+    this.state = {
+      currentPage: 1,
+      elementsPerPage: 20,
+      pathName: ""
+    };
+  }
+
+  handleClick = event => {
+    this.setState({
+      currentPage: Number(event.target.id)
+    });
+  };
+
+  componentDidMount() {
+    this.setState({ pathName: this.props.history.location.pathname });
   }
 
   render() {
-    console.log(this.props.entries);
+    const { id, pageId } = this.props.match.params;
+    const { elementsPerPage } = this.state;
+    const indexOfLast = pageId * elementsPerPage;
+    const indexOfFirst = indexOfLast - elementsPerPage;
+    if (!this.props.entries) return null;
+    const currentEntries = this.props.entries.slice(indexOfFirst, indexOfLast);
+    const NoOfPages = [];
+
+    for (
+      let i = 1;
+      i <= Math.ceil(this.props.entries.length / elementsPerPage);
+      i++
+    ) {
+      NoOfPages.push(i);
+    }
+    const renderNavigation = (
+      <tfoot>
+        <tr>
+          <td colSpan="5">
+            <div className="links">
+              <a href="#">&laquo;</a>{" "}
+              {NoOfPages.map(item => (
+                <Link
+                  to={"/entries/" + id + "/page/" + item}
+                  key={item}
+                  id={item}
+                  onClick={this.handleClick}
+                >
+                  {item} {" | "}
+                </Link>
+              ))}
+              <a href="#">&raquo;</a>
+            </div>
+          </td>
+        </tr>
+      </tfoot>
+    );
+
+    const renderTable = (
+      <table>
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Domain</th>
+            <th>Range</th>
+            <th>Status</th>
+            <th />
+          </tr>
+        </thead>
+        {renderNavigation}
+        <tbody>
+          {this.props.entries &&
+            currentEntries.map(entry => (
+              <tr key={entry.id}>
+                <td>{entry.id}</td>
+                <td>{entry.domain}</td>
+                <td>{entry.range}</td>
+                <td>{entry.status && entry.status}</td>
+                <td>
+                  <button onClick={() => this.props.handleDelete(entry.id)}>
+                    Delete
+                  </button>
+                  {" | "}
+                  <button onClick={() => this.props.handleEdit(entry)}>
+                    Edit
+                  </button>
+                </td>
+              </tr>
+            ))}
+        </tbody>
+      </table>
+    );
+
     return (
       <div>
         <h2>Dictionary Entries</h2>
+        {this.props.entries !== null && (
+          <button onClick={this.props.handleExport}>Download CSV</button>
+        )}
         {this.props.entries === null && <p>Loading dictionary entries...</p>}
-        <table>
-          <thead>
-            <tr>
-              <th>Id</th>
-              <th>Domain</th>
-              <th>Range</th>
-              <th>Status</th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {this.props.entries &&
-              this.props.entries.map(entry => (
-                <tr key={entry.id}>
-                  <td>{entry.id}</td>
-                  <td>{entry.domain}</td>
-                  <td>{entry.range}</td>
-                  <td>{entry.status && entry.status}</td>
-                  <td>
-                    <button onClick={() => this.props.handleDelete(entry.id)}>
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </table>
+        {renderTable}
       </div>
     );
   }

@@ -1,4 +1,5 @@
 import React from "react";
+import FileSaver from "file-saver";
 import EntriesList from "./EntriesList";
 import {
   saveEntry,
@@ -14,16 +15,17 @@ class EntriesPage extends React.Component {
     super(props);
 
     this.state = {
-      entries: null,
+      entries: [],
       entry: {},
       dictId: null,
       checked: true,
-      nextId: 0
+      nextId: 0,
+      mode: "add"
     };
 
     this.handleDelete = this.handleDelete.bind(this);
     this.handleChange = this.handleChange.bind(this);
-    this.handleCheck = this.handleCheck.bind(this);
+    this.handleCheckbox = this.handleCheckbox.bind(this);
     this.handleSave = this.handleSave.bind(this);
     this.handleValidate = this.handleValidate.bind(this);
   }
@@ -38,7 +40,7 @@ class EntriesPage extends React.Component {
     });
   };
 
-  handleCheck = event => {
+  handleCheckbox = event => {
     const checked = event.target.checked;
     this.setState({ checked });
   };
@@ -49,6 +51,35 @@ class EntriesPage extends React.Component {
 
     const { entry, entries } = this.state;
 
+    if (this.state.mode === "edit") {
+      try {
+        entry.drKey = entry.domain + entry.range;
+        entry.rdKey = entry.range + entry.domain;
+        delete entry.status;
+        const result = await saveEntry(entry);
+        this.setState(prevState => {
+          const entriesNew = [...prevState.entries];
+          const index = entriesNew.findIndex(obj => obj.id === entry.id);
+          entriesNew[index] = { ...entry };
+          return {
+            entries: entriesNew,
+            mode: "add",
+            entry: {
+              ...prevState.entry,
+              domain: "",
+              range: "",
+              drKey: "",
+              rdKey: ""
+            }
+          };
+        });
+      } catch (error) {
+        console.log(error);
+      }
+
+      return;
+    }
+
     try {
       if (!this.state.dictId) return;
 
@@ -57,7 +88,7 @@ class EntriesPage extends React.Component {
       entry.rdKey = entry.range + entry.domain;
       const result = await saveEntry(entry);
 
-      this.setState({ nextId: result.id });
+      this.setState({ nextId: +result.id + 1 });
       this.setState({ entries: [...entries, result] });
     } catch (error) {
       console.log(error);
@@ -274,7 +305,7 @@ class EntriesPage extends React.Component {
     }
   }
 
-  handleFile = event => {
+  handleFileUpload = event => {
     if (window.FileReader) {
       const csvFile = event.target.files[0];
       if (csvFile) {
@@ -302,6 +333,8 @@ class EntriesPage extends React.Component {
     if (newEntries) {
       try {
         const result = await saveBulkEntries(newEntries);
+        const nextId = +result[result.length - 1].id + 1;
+        this.setState({ nextId });
         this.setState({ entries: result });
       } catch (error) {
         console.log(error);
@@ -320,24 +353,61 @@ class EntriesPage extends React.Component {
   errorHandler = event => {
     console.log(event.target.error);
   };
+
+  handleFileExport = event => {
+    event.preventDefault();
+    const csv = this.convertEntriesToCSV();
+    const csvData = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+
+    FileSaver.saveAs(csvData, "data.csv");
+  };
+
+  convertEntriesToCSV = () => {
+    const { entries } = this.state;
+
+    let lines = entries.map(entry => {
+      return Object.values(entry).join(",");
+    });
+    let linesCSV = lines.join("\n");
+
+    return linesCSV;
+  };
+
+  handleEditEntry = entry => {
+    console.log("before", this.state);
+    this.setState({ entry: { ...entry }, mode: "edit" });
+  };
+
+  handleCancelEdit = () => {
+    this.setState(prevState => ({
+      mode: "add",
+      entry: { ...prevState.entry, domain: "", range: "", drKey: "", rdKey: "" }
+    }));
+  };
+
   render() {
     return (
       <>
         <h2>Upload file</h2>
-        <UploadFile handleFile={this.handleFile} fileType=".csv" />
+        <UploadFile handleFile={this.handleFileUpload} fileType=".csv" />
         <EntryForm
           handleChange={this.handleChange}
           handleSave={this.handleSave}
-          handleCheck={this.handleCheck}
+          handleCheck={this.handleCheckbox}
           handleValidate={this.handleValidate}
-          domain={this.state.entry.domain}
-          range={this.state.entry.range}
+          cancelEdit={this.handleCancelEdit}
+          entry={this.state.entry}
           errors={this.state.errors}
           checked={this.state.checked}
+          mode={this.state.mode}
         />
         <EntriesList
           entries={this.state.entries}
           handleDelete={this.handleDelete}
+          handleExport={this.handleFileExport}
+          handleEdit={this.handleEditEntry}
+          history={this.props.history}
+          match={this.props.match}
         />
       </>
     );

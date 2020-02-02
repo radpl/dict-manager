@@ -77,8 +77,15 @@ const newDictionary = {
   title: ""
 };
 
+const newEntry = {
+  id: null,
+  domain: "",
+  range: ""
+};
+
 module.exports = {
   newDictionary,
+  newEntry,
   dictionaries,
   entries
 };

@@ -8,8 +8,7 @@ import Checkbox from "../common/Checkbox";
 class EntryForm extends Component {
   render() {
     const {
-      domain,
-      range,
+      entry,
       checked,
       handleSave,
       handleChange,
@@ -19,23 +18,30 @@ class EntryForm extends Component {
     } = this.props;
     return (
       <>
-        <h2>Add Dictionary Entries</h2>
+        <h2>Add Dictionary Entry</h2>
         <form onSubmit={handleSave}>
           <TextInput
             name="domain"
             label="Domain"
-            value={domain}
+            value={entry.domain}
             onChange={handleChange}
             error={errors.domain}
           />
           <TextInput
             name="range"
-            value={range}
+            value={entry.range}
             label="Range"
             onChange={handleChange}
             error={errors.range}
           />
-          <button>Add</button>
+          {this.props.mode === "add" && <button>Add</button>}
+          {this.props.mode === "edit" && (
+            <>
+              <button>Update</button>
+              {" | "}
+              <button onClick={this.props.cancelEdit}>Cancel</button>
+            </>
+          )}
           <button onClick={handleValidate}>Validate</button>
           <Checkbox
             name="validate"

@@ -13,7 +13,8 @@ export default class App extends Component {
         <Header />
         <Route exact path="/" component={HomePage} />
         <Route path="/dictionaries" component={DictPage} />
-        <Route path="/entries/:id" component={EntriesPage} />
+        <Route path="/entries/:id/page/:pageId" component={EntriesPage} />
+        {/* <Route path="/entries/:id" component={EntriesPage} /> */}
       </div>
     );
   }

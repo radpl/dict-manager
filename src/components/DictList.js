@@ -9,7 +9,6 @@ class DictList extends Component {
   }
 
   render() {
-    console.log(this.props.dictionaries);
     return (
       <div>
         <h2>Dictionaries</h2>
@@ -30,7 +29,7 @@ class DictList extends Component {
                   <td>{dict.id}</td>
                   <td>{dict.title}</td>
                   <td>
-                    <Link to={"/entries/" + dict.id}>Entries</Link>
+                    <Link to={"/entries/" + dict.id + "/page/1"}>Entries</Link>
                   </td>
                   <td>
                     <button onClick={() => this.props.handleDelete(dict.id)}>
