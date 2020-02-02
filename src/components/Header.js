@@ -6,10 +6,10 @@ const Header = () => {
     <>
       <h1>Dictionary Management Application</h1>
       <nav>
-        <Link to="/">Home</Link>
-        {" | "}
-        <Link to="/dictionaries">Dictionaries</Link>
-        {" | "}
+        <ul>
+          <li><Link to="/">Home</Link></li>
+          <li><Link to="/dictionaries">Dictionaries</Link></li>
+        </ul>
       </nav>
     </>
   );

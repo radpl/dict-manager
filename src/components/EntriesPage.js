@@ -168,8 +168,7 @@ class EntriesPage extends React.Component {
     try {
       const entries = await getEntries(dictId);
       const nextId = +entries[entries.length - 1].id + 1;
-      this.setState({ nextId });
-      this.setState({ entries });
+      this.setState({ nextId, entries });
     } catch (err) {
       console.log("Error", err);
     }
@@ -230,7 +229,6 @@ class EntriesPage extends React.Component {
   render() {
     return (
       <>
-        <h2>Upload file</h2>
         <UploadFile
           handleFile={this.handleFileUpload}
           fileType=".csv"
@@ -241,7 +239,6 @@ class EntriesPage extends React.Component {
           handleChange={this.handleChange}
           handleSave={this.handleSave}
           handleCheck={this.handleCheckbox}
-          handleValidate={this.handleValidate}
           cancelEdit={this.handleCancelEdit}
           entry={this.state.entry}
           errors={this.state.errors}
@@ -254,6 +251,7 @@ class EntriesPage extends React.Component {
           handleExport={this.handleFileExport}
           handleEdit={this.handleEditEntry}
           handleUploadClick={this.handleUploadClick}
+          handleValidate={this.handleValidate}
           history={this.props.history}
           match={this.props.match}
         />

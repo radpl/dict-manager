@@ -49,10 +49,7 @@ class DictPage extends React.Component {
           return {
             dictionaries: dictionariesNew,
             mode: "add",
-            dictionary: {
-              ...prevState.dictionary,
-              title: ""
-            }
+            dictionary: Object.assign({}, { title: "" })
           };
         });
       } catch (error) {

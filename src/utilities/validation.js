@@ -10,6 +10,7 @@ export const validateEntryStatus = entries => {
   const ranges = {};
 
   for (let i = 0; i < entries.length; i++) {
+
     //identify duplicates
     if (domainRangeKeys[entries[i].drKey]) {
       domainRangeKeys[entries[i].drKey].push(i);
@@ -43,12 +44,12 @@ export const validateEntryStatus = entries => {
       rangeKeys[entries[i].range] = [i];
     }
 
-    //pupulate status
+    //pupulate initial status
     entries[i].status = "Valid";
   }
 
-  const drKeys = Object.keys(domainRangeKeys);
   //identify cycles
+  const drKeys = Object.keys(domainRangeKeys);
   for (let i = 0; i < drKeys.length; i++) {
     let rdKey = rangeDomainKeys[drKeys[i]];
     if (rdKey) {
@@ -58,8 +59,8 @@ export const validateEntryStatus = entries => {
     }
   }
 
-  const rKeys = Object.keys(rangeKeys);
   //identify chains
+  const rKeys = Object.keys(rangeKeys);
   for (let i = 0; i < rKeys.length; i++) {
     let dKey = domainKeys[rKeys[i]];
     if (dKey) {
@@ -87,9 +88,7 @@ export const validateEntryStatus = entries => {
     if (entries[duplicateKeys[i]].status === "Valid") {
       entries[duplicateKeys[i]].status = "Duplicate";
     } else if (entries[duplicateKeys[i]].status.includes("Forks")) {
-      entries[duplicateKeys[i]].status = entries[
-        duplicateKeys[i]
-      ].status.replace("Forks", "Duplicate");
+      entries[duplicateKeys[i]].status = entries[duplicateKeys[i]].status.replace("Forks", "Duplicate");
     } else {
       entries[duplicateKeys[i]].status += " Duplicate";
     }
@@ -107,10 +106,7 @@ export const validateEntryStatus = entries => {
     if (entries[cycleKeys[i]].status === "Valid") {
       entries[cycleKeys[i]].status = "Cycle";
     } else if (entries[cycleKeys[i]].status.includes("Chain")) {
-      entries[cycleKeys[i]].status = entries[cycleKeys[i]].status.replace(
-        "Chain",
-        "Cycle"
-      );
+      entries[cycleKeys[i]].status = entries[cycleKeys[i]].status.replace("Chain", "Cycle");
     } else {
       entries[cycleKeys[i]].status += " Cycle";
     }

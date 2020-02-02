@@ -13,7 +13,6 @@ class EntryForm extends Component {
       handleSave,
       handleChange,
       handleCheck,
-      handleValidate,
       errors = {}
     } = this.props;
     return (
@@ -26,6 +25,7 @@ class EntryForm extends Component {
             value={entry.domain}
             onChange={handleChange}
             error={errors.domain}
+            labelClass="entries"
           />
           <TextInput
             name="range"
@@ -33,19 +33,18 @@ class EntryForm extends Component {
             label="Range"
             onChange={handleChange}
             error={errors.range}
+            labelClass="entries"
           />
           {this.props.mode === "add" && <button>Add</button>}
           {this.props.mode === "edit" && (
             <>
-              <button>Update</button>
-              {" | "}
+              <button>Update</button>{" | "}
               <button onClick={this.props.cancelEdit}>Cancel</button>
             </>
           )}
-          <button onClick={handleValidate}>Validate</button>
           <Checkbox
             name="validate"
-            label="Validate entry"
+            label="Validate on add"
             checked={checked}
             onChange={handleCheck}
           />

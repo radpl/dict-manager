@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 
 const TextInput = props => {
-  const { name, label, onChange, placeholder, value, error } = props;
+  const { name, label, onChange, placeholder, value, error, labelClass } = props;
   let formClass = "form-group";
   if (error && error.length > 0) {
     formClass += " has-error";
@@ -10,7 +10,7 @@ const TextInput = props => {
 
   return (
     <div className={formClass}>
-      <label htmlFor={name}>{label}</label>
+      <label className={labelClass} htmlFor={name}>{label}</label>
       <div>
         <input
           type="text"
@@ -20,8 +20,8 @@ const TextInput = props => {
           value={value}
           onChange={onChange}
         />
-        {error && <div className="input-error">{error}</div>}
       </div>
+      {error && <div className="input-error">{error}</div>}
     </div>
   );
 };
