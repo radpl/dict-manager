@@ -101,6 +101,7 @@ class EntriesList extends Component {
     return (
       <div>
         <h2>Dictionary Entries</h2>
+        <button onClick={this.props.handleUploadClick}>Upload CSV</button>
         {this.props.entries !== null && (
           <button onClick={this.props.handleExport}>Download CSV</button>
         )}

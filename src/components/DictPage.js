@@ -14,7 +14,8 @@ class DictPage extends React.Component {
     this.state = {
       dictionaries: null,
       dictionary: {},
-      errors: {}
+      errors: {},
+      mode: "add"
     };
 
     this.handleDelete = this.handleDelete.bind(this);
@@ -36,6 +37,30 @@ class DictPage extends React.Component {
     event.preventDefault();
     if (!this.isValid()) return;
     const { dictionary, dictionaries } = this.state;
+    if (this.state.mode === "edit") {
+      try {
+        await saveDictionary(dictionary);
+        this.setState(prevState => {
+          const dictionariesNew = [...prevState.dictionaries];
+          const index = dictionariesNew.findIndex(
+            obj => obj.id === dictionary.id
+          );
+          dictionariesNew[index] = { ...dictionary };
+          return {
+            dictionaries: dictionariesNew,
+            mode: "add",
+            dictionary: {
+              ...prevState.dictionary,
+              title: ""
+            }
+          };
+        });
+      } catch (error) {
+        console.log(error);
+      }
+
+      return;
+    }
 
     const found = dictionaries.find(item => item.title === dictionary.title);
     if (found) {
@@ -80,6 +105,17 @@ class DictPage extends React.Component {
     }
   };
 
+  handleDictEdit = dictionary => {
+    this.setState({ dictionary: { ...dictionary }, mode: "edit" });
+  };
+
+  handleCancelEdit = () => {
+    this.setState(prevState => ({
+      mode: "add",
+      dictionary: { ...prevState.dictionarydictionary, title: "" }
+    }));
+  };
+
   async componentDidMount() {
     try {
       const dictionaries = await getDictionaries();
@@ -95,12 +131,15 @@ class DictPage extends React.Component {
         <DictForm
           handleChange={this.handleChange}
           handleSave={this.handleSave}
+          handleEdit={this.handleCancelEdit}
           value={this.state.dictionary.title}
           errors={this.state.errors}
+          mode={this.state.mode}
         />
         <DictList
           dictionaries={this.state.dictionaries}
           handleDelete={this.handleDelete}
+          handleEdit={this.handleDictEdit}
         />
       </>
     );

@@ -4,7 +4,14 @@ import TextInput from "../common/TextInput";
 
 class DictForm extends Component {
   render() {
-    const { value, handleSave, handleChange, errors = {} } = this.props;
+    const {
+      value,
+      handleSave,
+      handleChange,
+      cancelEdit,
+      errors = {},
+      mode
+    } = this.props;
     return (
       <>
         <h2>Add Dictionary</h2>
@@ -16,7 +23,14 @@ class DictForm extends Component {
             onChange={handleChange}
             error={errors.dictionary}
           />
-          <button>Add</button>
+          {mode === "add" && <button>Add</button>}
+          {mode === "edit" && (
+            <>
+              <button>Update</button>
+              {" | "}
+              <button onClick={cancelEdit}>Cancel</button>
+            </>
+          )}
         </form>
       </>
     );

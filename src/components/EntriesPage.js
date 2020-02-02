@@ -13,7 +13,7 @@ import UploadFile from "../common/UploadFile";
 class EntriesPage extends React.Component {
   constructor(props) {
     super(props);
-
+    this.fileUploader = React.createRef();
     this.state = {
       entries: [],
       entry: {},
@@ -56,7 +56,7 @@ class EntriesPage extends React.Component {
         entry.drKey = entry.domain + entry.range;
         entry.rdKey = entry.range + entry.domain;
         delete entry.status;
-        const result = await saveEntry(entry);
+        await saveEntry(entry);
         this.setState(prevState => {
           const entriesNew = [...prevState.entries];
           const index = entriesNew.findIndex(obj => obj.id === entry.id);
@@ -304,6 +304,9 @@ class EntriesPage extends React.Component {
       console.log("Error", err);
     }
   }
+  handleUploadClick = () => {
+    this.fileUploader.current.click();
+  };
 
   handleFileUpload = event => {
     if (window.FileReader) {
@@ -339,10 +342,7 @@ class EntriesPage extends React.Component {
       } catch (error) {
         console.log(error);
       }
-
-      //this.setState({ newEntries });
     }
-    //console.log(newEntries);
   }
 
   fileLoaded = event => {
@@ -374,7 +374,6 @@ class EntriesPage extends React.Component {
   };
 
   handleEditEntry = entry => {
-    console.log("before", this.state);
     this.setState({ entry: { ...entry }, mode: "edit" });
   };
 
@@ -389,7 +388,12 @@ class EntriesPage extends React.Component {
     return (
       <>
         <h2>Upload file</h2>
-        <UploadFile handleFile={this.handleFileUpload} fileType=".csv" />
+        <UploadFile
+          handleFile={this.handleFileUpload}
+          fileType=".csv"
+          name="Upload"
+          uploadRef={this.fileUploader}
+        />
         <EntryForm
           handleChange={this.handleChange}
           handleSave={this.handleSave}
@@ -406,6 +410,7 @@ class EntriesPage extends React.Component {
           handleDelete={this.handleDelete}
           handleExport={this.handleFileExport}
           handleEdit={this.handleEditEntry}
+          handleUploadClick={this.handleUploadClick}
           history={this.props.history}
           match={this.props.match}
         />
