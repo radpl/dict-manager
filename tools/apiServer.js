@@ -28,30 +28,25 @@ server.use(middlewares);
 // To handle POST, PUT and PATCH you need to use a body-parser. Using JSON Server's bodyParser
 server.use(jsonServer.bodyParser);
 
-
 // Declaring custom routes below. Add custom routes before JSON Server router
+server.post("/entries/bulk", (req, res) => {
+  const db = router.db;
 
-// Add createdAt to all POSTS
-// server.use((req, res, next) => {
-//   if (req.method === "POST") {
-//     req.body.createdAt = Date.now();
-//   }
-//   // Continue to JSON Server router
-//   next();
-// });
+  if (Array.isArray(req.body)) {
+    req.body.forEach(element => {
+      insert(db, "entries", element);
+    });
+  } else {
+    insert(db, "entries", req.body);
+  }
+  const result = db.get("entries");
+  res.status(200).send(result);
 
-// server.post("/dictionaries", function (req, res, next) {
-//   //const error = validateCourse(req.body);
-//   //if (error) {
-//   //  res.status(400).send(error);
-//   //} else {
-//   //req.body.slug = createSlug(req.body.title); // Generate a slug for new courses.
-//   next();
-//   // }
-// });
-// server.post("/resumes", function(req, res, next) {
-//   next();
-// });
+  function insert(db, collection, data) {
+    const table = db.get(collection);
+    table.push(data).write();
+  }
+});
 
 // Use default router
 server.use(router);

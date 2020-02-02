@@ -1,7 +1,13 @@
 import React from "react";
 import EntriesList from "./EntriesList";
-import { saveEntry, getEntries, deleteEntry } from "../api/entryApi";
+import {
+  saveEntry,
+  saveBulkEntries,
+  getEntries,
+  deleteEntry
+} from "../api/entryApi";
 import EntryForm from "./EntryForm";
+import UploadFile from "../common/UploadFile";
 
 class EntriesPage extends React.Component {
   constructor(props) {
@@ -11,7 +17,8 @@ class EntriesPage extends React.Component {
       entries: null,
       entry: {},
       dictId: null,
-      checked: true
+      checked: true,
+      nextId: 0
     };
 
     this.handleDelete = this.handleDelete.bind(this);
@@ -49,6 +56,8 @@ class EntriesPage extends React.Component {
       entry.drKey = entry.domain + entry.range;
       entry.rdKey = entry.range + entry.domain;
       const result = await saveEntry(entry);
+
+      this.setState({ nextId: result.id });
       this.setState({ entries: [...entries, result] });
     } catch (error) {
       console.log(error);
@@ -128,8 +137,6 @@ class EntriesPage extends React.Component {
   handleValidate = event => {
     event.preventDefault();
     const { entries } = this.state;
-    alert("handle validate");
-
     this.validateEntryStatus(entries);
   };
 
@@ -259,16 +266,65 @@ class EntriesPage extends React.Component {
     this.setState({ dictId });
     try {
       const entries = await getEntries(dictId);
-      console.log(entries);
+      const nextId = +entries[entries.length - 1].id + 1;
+      this.setState({ nextId });
       this.setState({ entries });
     } catch (err) {
       console.log("Error", err);
     }
   }
 
+  handleFile = event => {
+    if (window.FileReader) {
+      const csvFile = event.target.files[0];
+      if (csvFile) {
+        const reader = new FileReader();
+        reader.readAsText(csvFile);
+        reader.onload = this.fileLoaded;
+        reader.onerror = this.errorHandler;
+      }
+    }
+  };
+
+  async processData(csv) {
+    const linesRaw = csv.split(/\r\n|\n/);
+    const newEntries = linesRaw.map((data, index) => {
+      const [domain, range] = data.split(";");
+      return {
+        id: this.state.nextId + index,
+        dictId: this.state.dictId,
+        domain,
+        range,
+        drKey: domain + range,
+        rdKey: range + domain
+      };
+    });
+    if (newEntries) {
+      try {
+        const result = await saveBulkEntries(newEntries);
+        this.setState({ entries: result });
+      } catch (error) {
+        console.log(error);
+      }
+
+      //this.setState({ newEntries });
+    }
+    //console.log(newEntries);
+  }
+
+  fileLoaded = event => {
+    const csv = event.target.result;
+    this.processData(csv);
+  };
+
+  errorHandler = event => {
+    console.log(event.target.error);
+  };
   render() {
     return (
       <>
+        <h2>Upload file</h2>
+        <UploadFile handleFile={this.handleFile} fileType=".csv" />
         <EntryForm
           handleChange={this.handleChange}
           handleSave={this.handleSave}
