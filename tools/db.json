@@ -3,10 +3,6 @@
     {
       "id": 1,
       "title": "Colors"
-    },
-    {
-      "title": "a",
-      "id": 2
     }
   ],
   "entries": [
@@ -73,6 +69,14 @@
       "range": "Anthracite",
       "drKey": "Dark GreyAnthracite",
       "rdKey": "AnthraciteDark Grey"
+    },
+    {
+      "dictId": "1",
+      "domain": "A",
+      "range": "B",
+      "drKey": "AB",
+      "rdKey": "BA",
+      "id": 9
     }
   ]
 }

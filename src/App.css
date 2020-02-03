@@ -24,6 +24,10 @@ button:hover{
      background-color:lightgrey;
     }
 
+    td button {
+      margin-top:0;
+      margin-bottom:0;
+    }
     input {
       border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
       border:solid 1px #85858f;
@@ -84,4 +88,9 @@ button:hover{
       margin-top:1.5rem;
       border:solid 1px #85858f;
       width:60%;
+    }
+
+    div.entryForm h2 {
+      margin-top:0.1rem;
+      font-size:1.2em;
     }
