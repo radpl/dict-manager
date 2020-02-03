@@ -32,7 +32,7 @@ class EntriesList extends Component {
     if (!this.props.entries) return null;
     const currentEntries = this.props.entries.slice(indexOfFirst, indexOfLast);
     const NoOfPages = [];
-
+    const errorsKeys = Object.keys(this.props.validationErrors);
     for (
       let i = 1;
       i <= Math.ceil(this.props.entries.length / elementsPerPage);
@@ -40,6 +40,29 @@ class EntriesList extends Component {
     ) {
       NoOfPages.push(i);
     }
+    const validationSummary = (
+      <>
+        <h2>Validation Summary</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Count</th>
+            </tr>
+          </thead>
+          <tbody>
+            {errorsKeys &&
+              errorsKeys.map(status => (
+                <tr key={status}>
+                  <td>{status}</td>
+                  <td>{this.props.validationErrors[status]}</td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
+      </>
+    );
+
     const renderNavigation = (
       <tfoot>
         <tr>
@@ -100,6 +123,7 @@ class EntriesList extends Component {
 
     return (
       <div>
+        {errorsKeys && errorsKeys.length > 0 && validationSummary}
         <h2>Dictionary Entries</h2>
         <button onClick={this.props.handleValidate}>Validate dictionary</button>
         <button onClick={this.props.handleUploadClick}>Upload CSV</button>

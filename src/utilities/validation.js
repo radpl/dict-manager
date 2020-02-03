@@ -59,7 +59,7 @@ export const validateEntryStatus = entries => {
     }
   }
 
-  //identify chains I
+  //identify chains
   const rKeys = Object.keys(rangeKeys);
   for (let i = 0; i < rKeys.length; i++) {
     let dKey = domainKeys[rKeys[i]];
@@ -70,7 +70,6 @@ export const validateEntryStatus = entries => {
     }
   }
 
-  //indetify chains II
   const dKeys = Object.keys(domainKeys);
   for (let i = 0; i < dKeys.length; i++) {
     let rKey = rangeKeys[dKeys[i]];
@@ -81,7 +80,7 @@ export const validateEntryStatus = entries => {
     }
   }
 
-  //update status
+  //update status for all errors
   const domainsKeys = Object.keys(domains);
   const duplicateKeys = Object.keys(duplicates);
   const rangesKeys = Object.keys(ranges);
@@ -125,3 +124,12 @@ export const validateEntryStatus = entries => {
 
   return entries;
 };
+
+export const calculateValidationErrors = (entries) => {
+  const errors = {};
+  for (let i = 0; i < entries.length; i++) {
+    errors[entries[i].status] = errors[entries[i].status] ? errors[entries[i].status] + 1 : 1;
+  }
+
+  return errors;
+}

@@ -1,10 +1,7 @@
 import React from "react";
 import DictList from "./DictList";
-import {
-  saveDictionary,
-  getDictionaries,
-  deleteDictionary
-} from "../api/dictApi";
+import { saveDictionary, getDictionaries, deleteDictionary } from "../api/dictApi";
+import { deleteBulkEntries } from "../api/entryApi";
 import DictForm from "./DictForm";
 
 class DictPage extends React.Component {
@@ -94,10 +91,11 @@ class DictPage extends React.Component {
   handleDelete = async dictId => {
     try {
       await deleteDictionary(dictId);
-      const filteredDicts = this.state.dictionaries.filter(
-        item => item.id !== dictId
-      );
+      const filteredDicts = this.state.dictionaries.filter(item => item.id !== dictId);
       this.setState({ dictionaries: filteredDicts });
+
+      await deleteBulkEntries(dictId);
+
     } catch (error) {
       console.log("Delete failed " + error.message);
     }
@@ -107,7 +105,8 @@ class DictPage extends React.Component {
     this.setState({ dictionary: { ...dictionary }, mode: "edit" });
   };
 
-  handleCancelEdit = () => {
+  handleCancelEdit = (event) => {
+    event.preventDefault();
     this.setState(prevState => ({
       mode: "add",
       dictionary: { ...prevState.dictionarydictionary, title: "" }
@@ -129,7 +128,7 @@ class DictPage extends React.Component {
         <DictForm
           handleChange={this.handleChange}
           handleSave={this.handleSave}
-          handleEdit={this.handleCancelEdit}
+          cancelEdit={this.handleCancelEdit}
           value={this.state.dictionary.title}
           errors={this.state.errors}
           mode={this.state.mode}

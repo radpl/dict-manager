@@ -48,6 +48,16 @@ server.post("/entries/bulk", (req, res) => {
   }
 });
 
+server.delete("/entries/bulk", (req, res) => {
+  const db = router.db;
+  const dictId = +req.query.dictId;
+  console.log(dictId);
+  db.get("entries").remove({ dictId }).write();
+  db.get("entries").remove({ dictId: dictId.toString() }).write();
+  res.status(200).send({ deleted: dictId });
+
+});
+
 // Use default router
 server.use(router);
 
@@ -56,20 +66,3 @@ const port = 3001;
 server.listen(port, () => {
   console.log(`JSON Server is running on port ${port}`);
 });
-
-// Centralized logic
-
-// Returns a URL friendly slug
-// function createSlug(value) {
-//   return value
-//     .replace(/[^a-z0-9_]+/gi, "-")
-//     .replace(/^-|-$/g, "")
-//     .toLowerCase();
-// }
-
-// function validateCourse(course) {
-//   if (!course.title) return "Title is required.";
-//   if (!course.authorId) return "Author is required.";
-//   if (!course.category) return "Category is required.";
-//   return "";
-// }

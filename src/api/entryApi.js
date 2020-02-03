@@ -27,6 +27,15 @@ export function saveBulkEntries(entries) {
     .catch(handleError);
 }
 
+export function deleteBulkEntries(dictId) {
+  return fetch(baseUrl + "/bulk?dictId=" + dictId, {
+    method: "DELETE",
+    headers: { "content-type": "application/json" }
+  })
+    .then(handleResponse)
+    .catch(handleError);
+}
+
 export function deleteEntry(entryId) {
   return fetch(baseUrl + "/" + entryId, { method: "DELETE" })
     .then(handleResponse)

@@ -16,7 +16,7 @@ class EntryForm extends Component {
       errors = {}
     } = this.props;
     return (
-      <>
+      <div className="entryForm">
         <h2>Add Dictionary Entry</h2>
         <form onSubmit={handleSave}>
           <TextInput
@@ -52,7 +52,7 @@ class EntryForm extends Component {
         {errors && errors.entry && (
           <div className="input-error">{errors.entry}</div>
         )}
-      </>
+      </div>
     );
   }
 }

@@ -13,7 +13,7 @@ class DictForm extends Component {
       mode
     } = this.props;
     return (
-      <>
+      <div className="entryForm">
         <h2>Add Dictionary</h2>
         <form onSubmit={handleSave}>
           <TextInput
@@ -32,7 +32,7 @@ class DictForm extends Component {
             </>
           )}
         </form>
-      </>
+      </div>
     );
   }
 }

@@ -79,3 +79,9 @@ button:hover{
       display:inline-block;
       margin-left:0.25em;
     }
+
+    div.entryForm {
+      margin-top:1.5rem;
+      border:solid 1px #85858f;
+      width:60%;
+    }

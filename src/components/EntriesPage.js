@@ -2,7 +2,7 @@ import React from "react";
 import FileSaver from "file-saver";
 import EntriesList from "./EntriesList";
 import { saveEntry, saveBulkEntries, getEntries, deleteEntry } from "../api/entryApi";
-import { validateEntryStatus } from "../utilities/validation";
+import { validateEntryStatus, calculateValidationErrors } from "../utilities/validation";
 import { convertEntriesToCSV, convertCSVToEntries } from "../utilities/fileProcessing";
 import EntryForm from "./EntryForm";
 import UploadFile from "../common/UploadFile";
@@ -17,7 +17,8 @@ class EntriesPage extends React.Component {
       dictId: null,
       checked: false,
       nextId: 0,
-      mode: "add"
+      mode: "add",
+      validationErrors: {}
     };
 
     this.handleDelete = this.handleDelete.bind(this);
@@ -159,7 +160,8 @@ class EntriesPage extends React.Component {
     event.preventDefault();
     const { entries } = this.state;
     const validatedEntries = validateEntryStatus(entries);
-    this.setState({ entries: [...validatedEntries] });
+    const validationErrors = calculateValidationErrors(validatedEntries);
+    this.setState({ entries: [...validatedEntries], validationErrors });
   };
 
   async componentDidMount() {
@@ -167,7 +169,7 @@ class EntriesPage extends React.Component {
     this.setState({ dictId });
     try {
       const entries = await getEntries(dictId);
-      const nextId = entries ? +entries[entries.length - 1].id + 1 : 1;
+      const nextId = entries && entries.length > 0 ? +entries[entries.length - 1].id + 1 : 1;
       this.setState({ nextId, entries });
     } catch (err) {
       console.log("Error", err);
@@ -254,6 +256,7 @@ class EntriesPage extends React.Component {
           handleValidate={this.handleValidate}
           history={this.props.history}
           match={this.props.match}
+          validationErrors={this.state.validationErrors}
         />
       </>
     );
