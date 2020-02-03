@@ -11,7 +11,7 @@ table th {
   padding: 3px 2px;
 }
 table tbody td {
-  font-size: 13px;
+  font-size: 15px;
 }
 
 table thead {
@@ -26,4 +26,23 @@ table thead th {
 }
 table thead th:first-child {
   border-left: none;
+}
+
+table td.Valid {
+  color:green;
+}
+
+table td.Duplicate {
+  color:orange;
+}
+
+table td.Forks {
+  color:orangered;
+}
+
+table td.Chain {
+  color:orangered;
+}
+table td.Cycle {
+  color:red;
 }

@@ -20,7 +20,7 @@ export const validateEntryStatus = entries => {
     } else {
       domainRangeKeys[entries[i].drKey] = [i];
     }
-    //populate for cycles identification
+    //populate ids for cycles identification
     if (rangeDomainKeys[entries[i].rdKey]) {
       rangeDomainKeys[entries[i].rdKey].push(i);
     } else {
@@ -37,7 +37,7 @@ export const validateEntryStatus = entries => {
       domainKeys[entries[i].domain] = [i];
     }
 
-    //populate for chains identification
+    //populate ids for chains identification
     if (rangeKeys[entries[i].range]) {
       rangeKeys[entries[i].range].push(i);
     } else {
@@ -59,13 +59,24 @@ export const validateEntryStatus = entries => {
     }
   }
 
-  //identify chains
+  //identify chains I
   const rKeys = Object.keys(rangeKeys);
   for (let i = 0; i < rKeys.length; i++) {
     let dKey = domainKeys[rKeys[i]];
     if (dKey) {
       for (let j = 0; j < dKey.length; j++) {
         ranges[dKey[j]] = true;
+      }
+    }
+  }
+
+  //indetify chains II
+  const dKeys = Object.keys(domainKeys);
+  for (let i = 0; i < dKeys.length; i++) {
+    let rKey = rangeKeys[dKeys[i]];
+    if (rKey) {
+      for (let j = 0; j < rKey.length; j++) {
+        ranges[rKey[j]] = true;
       }
     }
   }

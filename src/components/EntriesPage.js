@@ -61,7 +61,7 @@ class EntriesPage extends React.Component {
           return {
             entries: entriesNew,
             mode: "add",
-            entry: { ...prevState.entry, domain: "", range: "", drKey: "", rdKey: "" }
+            entry: Object.assign({}, { dictId: this.state.dictId, domain: "", range: "", drKey: "", rdKey: "" })
           };
         });
       } catch (error) {
@@ -80,7 +80,7 @@ class EntriesPage extends React.Component {
       const result = await saveEntry(entry);
 
       this.setState({ nextId: +result.id + 1 });
-      this.setState({ entries: [...entries, result] });
+      this.setState({ entries: [...entries, result], entry: Object.assign({}, { dictId: this.state.dictId, domain: "", range: "", drKey: "", rdKey: "" }) });
     } catch (error) {
       console.log(error);
     }
@@ -141,7 +141,7 @@ class EntriesPage extends React.Component {
       this.setState({ errors });
       return false;
     }
-
+    this.setState({ errors });
     return valid;
   };
 
@@ -167,7 +167,7 @@ class EntriesPage extends React.Component {
     this.setState({ dictId });
     try {
       const entries = await getEntries(dictId);
-      const nextId = +entries[entries.length - 1].id + 1;
+      const nextId = entries ? +entries[entries.length - 1].id + 1 : 1;
       this.setState({ nextId, entries });
     } catch (err) {
       console.log("Error", err);
@@ -222,7 +222,7 @@ class EntriesPage extends React.Component {
   handleCancelEdit = () => {
     this.setState(prevState => ({
       mode: "add",
-      entry: { ...prevState.entry, domain: "", range: "", drKey: "", rdKey: "" }
+      entry: Object.assign({}, { dictId: this.state.dictId, domain: "", range: "", drKey: "", rdKey: "" })
     }));
   };
 

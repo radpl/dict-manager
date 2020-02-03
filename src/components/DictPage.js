@@ -37,6 +37,7 @@ class DictPage extends React.Component {
     event.preventDefault();
     if (!this.isValid()) return;
     const { dictionary, dictionaries } = this.state;
+
     if (this.state.mode === "edit") {
       try {
         await saveDictionary(dictionary);
@@ -65,7 +66,7 @@ class DictPage extends React.Component {
     }
     try {
       const result = await saveDictionary(dictionary);
-      this.setState({ dictionaries: [...dictionaries, result] });
+      this.setState({ dictionaries: [...dictionaries, result], dictionary: Object.assign({}, { title: "" }) });
     } catch (error) {
       console.log(error);
     }
