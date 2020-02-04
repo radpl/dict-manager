@@ -201,7 +201,8 @@ class EntriesPage extends React.Component {
     const newEntries = convertCSVToEntries(csv, this.state.nextId, this.state.dictId)
     if (newEntries) {
       try {
-        const result = await saveBulkEntries(newEntries);
+        await saveBulkEntries(newEntries);
+        const result = await getEntries(this.state.dictId);
         const nextId = +result[result.length - 1].id + 1;
         this.setState({ nextId, entries: result });
       } catch (error) {

@@ -39,8 +39,8 @@ server.post("/entries/bulk", (req, res) => {
   } else {
     insert(db, "entries", req.body);
   }
-  const result = db.get("entries");
-  res.status(200).send(result);
+
+  res.status(200).send({ bulkSuccess: true });
 
   function insert(db, collection, data) {
     const table = db.get(collection);
